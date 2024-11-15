@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Service
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: inventory
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data   # Mount volume for persistence
+
+  # Spring Boot Service
+  inventory-service:
+    build:
+      context: ./  # Root directory containing the Dockerfile
+      dockerfile: Dockerfile  # Use the custom Dockerfile to build the Spring Boot app
+    container_name: inventory-ms
+    ports:
+      - "8080:8080"  # Expose Spring Boot app on port 8080
+    depends_on:
+      - db  # Ensure Spring Boot starts after the database service is available
+
+volumes:
+  postgres_data:  # Define volume for PostgreSQL persistence
